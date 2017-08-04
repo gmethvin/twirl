@@ -25,10 +25,10 @@ object Import {
 object SbtTwirl extends AutoPlugin {
 
   import Import.TwirlKeys._
+  import sbt.KeyRanks.BSetting
+  import sbtcrossproject.CrossPlugin.autoImport._
 
   val autoImport = Import
-
-  import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport._
 
   override def requires = sbt.plugins.JvmPlugin
 
@@ -74,10 +74,7 @@ object SbtTwirl extends AutoPlugin {
   )
 
   def dependencySettings = Def.settings(
-    // Task is undefined if not a ScalaJSPlugin
-    isScalaJSProject := (isScalaJSProject ?? false).value,
     twirlVersion := readResourceProperty("twirl.version.properties", "twirl.api.version"),
-    // %%% will be the same as %% for normal projects
     libraryDependencies += "com.typesafe.play" %%% "twirl-api" % twirlVersion.value
   )
 

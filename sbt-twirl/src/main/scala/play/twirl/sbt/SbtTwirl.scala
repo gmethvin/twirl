@@ -30,6 +30,12 @@ object SbtTwirl extends AutoPlugin {
 
   val autoImport = Import
 
+  /** if we drop support for scala-js 0.6, this can be finally removed */
+  val isScalaJSProject = SettingKey[Boolean]("isScalaJSProject",
+    "Tests whether the current project is a Scala.js project. " +
+        "Do not set the value of this setting (only use it as read-only).",
+    BSetting)
+
   override def requires = sbt.plugins.JvmPlugin
 
   override def trigger = noTrigger
@@ -75,7 +81,10 @@ object SbtTwirl extends AutoPlugin {
 
   def dependencySettings = Def.settings(
     twirlVersion := readResourceProperty("twirl.version.properties", "twirl.api.version"),
-    libraryDependencies += "com.typesafe.play" %%% "twirl-api" % twirlVersion.value
+    libraryDependencies += {
+      if ((isScalaJSProject ?? false).value) "com.typesafe.play" %% "twirl-api_sjs0.6" % twirlVersion.value
+      else "com.typesafe.play" %%% "twirl-api" % twirlVersion.value
+    }
   )
 
   def scalacEncoding(options: Seq[String]): String = {
